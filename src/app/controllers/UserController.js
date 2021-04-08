@@ -5,7 +5,7 @@ class UserController {
   async store(request, response) {
     const { name, email, password } = request.body;
 
-    const userExists = User.findOne({ email });
+    const userExists = await User.findOne({ where: { email } });
 
     if (userExists) {
       throw new AppError("User already exists", 400);

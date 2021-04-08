@@ -54,7 +54,7 @@ class ProjectController {
       project.setNavers_(navers);
     }
 
-    return response.status(201).json(project);
+    return response.status(201).json({ name, navers });
   }
 
   async update(request, response) {
