@@ -13,7 +13,7 @@ export default async (request, response, next) => {
   const token = authorization.replace("Bearer", "").trim();
 
   try {
-    const data = await jwt.verify(token, authConfig.secret);
+    const data = jwt.verify(token, authConfig.secret);
 
     const { id } = data;
 
