@@ -1,12 +1,13 @@
 import jwt from "jsonwebtoken";
 
 import authConfig from "../../config/auth";
+import { AppError } from "../errors/AppError";
 
 export default async (request, response, next) => {
   const { authorization } = request.headers;
 
   if (!authorization) {
-    return response.status(401).json({ message: "Token missing" });
+    throw new AppError("Token missing", 401);
   }
 
   const token = authorization.replace("Bearer", "").trim();
@@ -20,6 +21,6 @@ export default async (request, response, next) => {
 
     return next();
   } catch {
-    return response.status(401).json({ message: "Invalid token!" });
+    throw new AppError("Invalid token!", 401);
   }
 };
