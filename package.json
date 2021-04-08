@@ -1,0 +1,26 @@
+{
+  "name": "naveteam-challenge",
+  "version": "1.0.0",
+  "main": "server.js",
+  "scripts": {
+    "dev": "nodemon src/server.js --watch src"
+  },
+  "repository": "git@github.com:Guilheeeerme/challenge.git",
+  "author": "Guilheeeerme <guilherme_moura.10222@outlook.com>",
+  "license": "MIT",
+  "dependencies": {
+    "bcryptjs": "^2.4.3",
+    "dotenv": "^8.2.0",
+    "express": "^4.17.1",
+    "express-async-errors": "^3.1.1",
+    "jsonwebtoken": "^8.5.1",
+    "pg": "^8.5.1",
+    "pg-hstore": "^2.3.3",
+    "sequelize": "^6.6.2"
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.7",
+    "sequelize-cli": "^6.2.0",
+    "sucrase": "^3.17.1"
+  }
+}
