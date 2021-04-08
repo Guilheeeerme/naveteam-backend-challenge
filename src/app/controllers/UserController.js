@@ -1,14 +1,15 @@
 import User from "../models/User";
+import { AppError } from "../errors/AppError";
 
 class UserController {
-  async show(request, response) {
-    const users = await User.findAll();
-
-    return response.status(201).json(users);
-  }
-
   async store(request, response) {
     const { name, email, password } = request.body;
+
+    const userExists = User.findOne({ email });
+
+    if (userExists) {
+      throw new AppError("User already exists", 400);
+    }
 
     const user = await User.create({
       name,
@@ -16,7 +17,7 @@ class UserController {
       password,
     });
 
-    return response.status(201).json(user);
+    return response.status(201).json({ id: user.id, name, email });
   }
 }
 
