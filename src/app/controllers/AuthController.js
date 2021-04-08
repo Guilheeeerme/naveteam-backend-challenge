@@ -1,6 +1,7 @@
 import jwt from "jsonwebtoken";
 
 import authConfig from "../../config/auth";
+import { AppError } from "../errors/AppError";
 
 class AuthController {
   async store(request, response) {
@@ -11,13 +12,11 @@ class AuthController {
     });
 
     if (!user) {
-      return response
-        .status(401)
-        .json({ message: "Email or password incorrect!" });
+      throw new AppError("Email or password incorrect!", 401);
     }
 
     if (!(await user.checkPassword(password))) {
-      return res.status(401).json({ message: "Email or password incorrect!" });
+      throw new AppError("Email or password incorrect!", 401);
     }
 
     const token = jwt.sign({ id: user.id }, authConfig.secret, {
