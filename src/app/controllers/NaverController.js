@@ -1,4 +1,5 @@
 import Naver from "../models/Naver";
+import User from "../models/User";
 import Project from "../models/Project";
 
 import convertDate from "../../utils/convertDate";
@@ -6,63 +7,82 @@ import { AppError } from "../errors/AppError";
 
 class NaverController {
   async index(request, response) {
+    const { user_id } = request;
     const { name, birthdate, admission_date } = request.query;
 
-    let navers = await Naver.findAll({
-      attributes: ["id", "name", "birthdate", "admission_date", "job_role"],
+    const user = await User.findByPk(user_id, {
+      include: {
+        association: "navers",
+        attributes: [
+          "id",
+          "name",
+          "birthdate",
+          "admission_date",
+          "job_role",
+          "projects",
+        ],
+        through: {
+          attributes: [],
+        },
+      },
     });
 
     if (name) {
-      const naversByName = navers.filter((naver) => naver.name === name);
-      return response.status(200).json(naversByName);
+      const naversByName = user.navers.filter((naver) => naver.name === name);
+      return response.json(naversByName);
     }
 
     if (birthdate) {
-      const naversByBirthdate = navers.filter(
+      const naversByBirthdate = user.navers.filter(
         (naver) => convertDate(naver.birthdate) === birthdate
       );
-      return response.status(200).json(naversByBirthdate);
+      return response.json(naversByBirthdate);
     }
 
     if (admission_date) {
-      const naversByAdmission_date = navers.filter(
+      const naversByAdmission_date = user.navers.filter(
         (naver) => convertDate(naver.admission_date) === admission_date
       );
-      return response.status(200).json(naversByAdmission_date);
+      return response.json(naversByAdmission_date);
     }
 
-    return response.status(200).json(navers);
+    return response.json(user.navers);
   }
 
   async show(request, response) {
-    const { naver_id } = request.params;
+    const { user_id } = request;
+    const { id } = request.params;
 
-    let naver = await Naver.findOne({
-      attributes: ["id", "name", "birthdate", "admission_date", "job_role"],
-      include: [
-        {
-          model: Project,
-          as: "projects_",
-          through: { attributes: [] },
-          attributes: ["id", "name"],
+    const user = await User.findByPk(user_id, {
+      include: {
+        association: "navers",
+        attributes: [
+          "id",
+          "name",
+          "birthdate",
+          "admission_date",
+          "job_role",
+          "projects",
+        ],
+        where: { id },
+        through: {
+          attributes: [],
         },
-      ],
-      where: { id: naver_id },
+      },
     });
 
-    return response.status(200).json(naver);
+    if (!user) {
+      return response.status(404).json({ error: "Naver not found" });
+    }
+
+    return response.status(200).json(user.navers);
   }
 
   async store(request, response) {
     const { user } = request;
 
-    const {
-      name,
-      birthdate,
-      admission_date,
-      job_role,
-      projects,
-    } = request.body;
+    // prettier-ignore
+    const { name, birthdate, admission_date, job_role, projects } = request.body;
 
     const naver = await Naver.create({
       name,
@@ -70,37 +90,39 @@ class NaverController {
       admission_date,
       job_role,
       projects,
-      user_id: user.id,
     });
 
-    if (projects && projects.length > 0) {
-      naver.setProjects_(projects);
-    }
+    await user.addNaver(naver);
 
-    return response.status(201).json({
-      name,
-      birthdate,
-      admission_date,
-      job_role,
-      projects,
-    });
+    return response.json(naver);
   }
 
   async update(request, response) {
-    const { user } = request;
-    const { naver_id } = request.params;
-    const {
-      name,
-      birthdate,
-      admission_date,
-      job_role,
-      projects,
-    } = request.body;
+    const { user_id } = request;
+    const { id } = request.params;
 
-    const naver = await Naver.findByPk(naver_id);
+    // prettier-ignore
+    const { name, birthdate, admission_date, job_role, projects } = request.body;
 
-    if (naver.user_id !== user.id) {
-      throw new AppError("You are not authorized to update this Naver", 401);
+    const naver = await Naver.findOne({ where: { id } });
+
+    if (!naver) {
+      throw new AppError("", 404);
+    }
+
+    const userNaver = await User.findByPk(user_id, {
+      include: {
+        association: "navers",
+        attributes: [],
+        where: { id },
+        through: {
+          attributes: [],
+        },
+      },
+    });
+
+    if (!userNaver) {
+      throw new AppError("You are not authorized to delete this Naver", 401);
     }
 
     await naver.update({
@@ -111,29 +133,36 @@ class NaverController {
       projects,
     });
 
-    if (projects && projects.length > 0) {
-      naver.setProjects_(projects);
-    }
-
-    return response
-      .status(200)
-      .json({ name, birthdate, admission_date, job_role, projects });
+    // prettier-ignore
+    return response.json({name, birthdate, admission_date, job_role, projects });
   }
 
   async delete(request, response) {
-    const { user } = request;
-    const { naver_id } = request.params;
+    const { user, user_id } = request;
+    const { id } = request.params;
 
-    const naver = await Naver.findByPk(naver_id);
+    const naver = await Naver.findOne({ where: { id } });
 
     if (!naver) {
       throw new AppError("", 404);
     }
 
-    if (naver.user_id !== user.id) {
+    const userNaver = await User.findByPk(user_id, {
+      include: {
+        association: "navers",
+        attributes: [],
+        where: { id },
+        through: {
+          attributes: [],
+        },
+      },
+    });
+
+    if (!userNaver) {
       throw new AppError("You are not authorized to delete this Naver", 401);
     }
 
+    await user.removeNaver(naver);
     await naver.destroy();
 
     return response.status(204).send();

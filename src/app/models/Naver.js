@@ -9,19 +9,18 @@ class Naver extends Model {
         admission_date: DataTypes.DATEONLY,
         job_role: DataTypes.STRING,
         projects: DataTypes.ARRAY(DataTypes.INTEGER),
-        user_id: DataTypes.INTEGER,
       },
-      { sequelize, tableName: "Navers" }
+      { sequelize, tableName: "navers" }
     );
 
     return this;
   }
 
   static associate(models) {
-    this.belongsToMany(models.Project, {
-      through: "NaverProjects",
-      as: "projects_",
+    this.belongsToMany(models.User, {
       foreignKey: "naver_id",
+      through: "user_navers",
+      as: "users",
     });
   }
 }

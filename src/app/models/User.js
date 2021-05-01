@@ -10,7 +10,7 @@ class User extends Model {
         password: DataTypes.VIRTUAL,
         password_hash: DataTypes.STRING,
       },
-      { sequelize, tableName: "Users" }
+      { sequelize, tableName: "users" }
     );
 
     this.addHook("beforeSave", async (user) => {
@@ -30,9 +30,9 @@ class User extends Model {
 
   static associate(models) {
     this.belongsToMany(models.Naver, {
-      through: "UserNavers",
-      as: "navers",
       foreignKey: "user_id",
+      through: "user_navers",
+      as: "navers",
     });
   }
 }

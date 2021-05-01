@@ -1,38 +1,38 @@
 module.exports = {
-  up: async (queryInterface, DataTypes) => {
-    await queryInterface.createTable("NaverProjects", {
+  up: async (queryInterface, Sequelize) => {
+    await queryInterface.createTable("user_navers", {
       id: {
-        allowNull: false,
+        type: Sequelize.INTEGER,
         autoIncrement: true,
         primaryKey: true,
-        type: DataTypes.INTEGER,
-      },
-      naver_id: {
-        type: DataTypes.INTEGER,
-        references: { model: "Navers", key: "id" },
-        onDelete: "CASCADE",
         allowNull: false,
       },
-      project_id: {
-        type: DataTypes.INTEGER,
-        references: { model: "Projects", key: "id" },
+      user_id: {
+        type: Sequelize.INTEGER,
+        references: { model: "users", key: "id" },
         onDelete: "CASCADE",
+        onUpdate: "CASCADE",
+        allowNull: false,
+      },
+      naver_id: {
+        type: Sequelize.INTEGER,
+        references: { model: "navers", key: "id" },
+        onDelete: "CASCADE",
+        onUpdate: "CASCADE",
         allowNull: false,
       },
       created_at: {
-        allowNull: false,
-        type: DataTypes.DATEONLY,
-        defaultValue: DataTypes.NOW,
+        type: Sequelize.DATE,
+        defaultValue: Sequelize.NOW,
       },
       updated_at: {
-        allowNull: false,
-        type: DataTypes.DATEONLY,
-        defaultValue: DataTypes.NOW,
+        type: Sequelize.DATE,
+        defaultValue: Sequelize.NOW,
       },
     });
   },
 
   down: async (queryInterface) => {
-    await queryInterface.dropTable("NaverProjects");
+    await queryInterface.dropTable("user_navers");
   },
 };

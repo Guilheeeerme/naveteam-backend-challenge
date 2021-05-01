@@ -11,6 +11,7 @@ async function findUserById(request, response, next) {
   }
 
   request.user = user;
+  request.user_id = user.dataValues.id;
 
   return next();
 }

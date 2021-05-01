@@ -17,16 +17,16 @@ routes.post("/login", AuthController.store);
 
 routes.use(ensureAuthenticated);
 
-routes.get("/navers", NaverController.index);
-routes.get("/navers/:naver_id", NaverController.show);
+routes.get("/navers", findUserById, NaverController.index);
+routes.get("/navers/:id", findUserById, NaverController.show);
 routes.post("/navers", findUserById, NaverController.store);
-routes.put("/navers/:naver_id", findUserById, NaverController.update);
-routes.delete("/navers/:naver_id", findUserById, NaverController.delete);
+routes.put("/navers/:id", findUserById, NaverController.update);
+routes.delete("/navers/:id", findUserById, NaverController.delete);
 
 routes.get("/projects", ProjectController.index);
-routes.get("/projects/:project_id", ProjectController.show);
+routes.get("/projects/:id", ProjectController.show);
 routes.post("/projects", findUserById, ProjectController.store);
-routes.put("/projects/:project_id", findUserById, ProjectController.update);
-routes.delete("/projects/:project_id", findUserById, ProjectController.delete);
+routes.put("/projects/:id", findUserById, ProjectController.update);
+routes.delete("/projects/:id", findUserById, ProjectController.delete);
 
 export default routes;

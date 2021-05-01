@@ -1,51 +1,48 @@
 "use strict";
 
 module.exports = {
-  up: async (queryInterface, DataTypes) => {
-    await queryInterface.createTable("Navers", {
+  up: async (queryInterface, Sequelize) => {
+    await queryInterface.createTable("navers", {
       id: {
-        type: DataTypes.INTEGER,
+        type: Sequelize.INTEGER,
         primaryKey: true,
         autoIncrement: true,
         allowNull: false,
       },
       name: {
-        type: DataTypes.STRING,
+        type: Sequelize.STRING,
         allowNull: false,
       },
       birthdate: {
-        type: DataTypes.DATE,
+        type: Sequelize.DATE,
         allowNull: false,
       },
       admission_date: {
-        type: DataTypes.DATE,
+        type: Sequelize.DATE,
         allowNull: false,
       },
       job_role: {
-        type: DataTypes.STRING,
+        type: Sequelize.STRING,
+        allowNull: false,
       },
       projects: {
-        type: DataTypes.ARRAY(DataTypes.INTEGER),
+        type: Sequelize.ARRAY(Sequelize.INTEGER),
         allowNull: true,
       },
-      user_id: {
-        type: DataTypes.INTEGER,
-        allowNull: false,
-      },
       created_at: {
-        type: DataTypes.DATE,
+        type: Sequelize.DATE,
         allowNull: false,
-        defaultValue: DataTypes.NOW,
+        defaultValue: Sequelize.NOW,
       },
       updated_at: {
-        type: DataTypes.DATE,
+        type: Sequelize.DATE,
         allowNull: false,
-        defaultValue: DataTypes.NOW,
+        defaultValue: Sequelize.NOW,
       },
     });
   },
 
   down: async (queryInterface) => {
-    await queryInterface.dropTable("Navers");
+    await queryInterface.dropTable("navers");
   },
 };
